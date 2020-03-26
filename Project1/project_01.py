@@ -1,32 +1,7 @@
 import cv2
 import numpy as np
 
-def boxFilter(img, kernel_size):
-    kernel = np.zeros((kernel_size, kernel_size))
-    kernel[:, :] = 1.0 / (kernel_size * kernel_size)
-
-    filtered = convolve(img, kernel)
-
-    return filtered
-
-def convolve(img, krn):
-    ksize, _ = krn.shape
-    krad = int(ksize / 2)
-
-    height, width, depth = img.shape
-    framed = np.ones((height + 2 * krad, width + 2 * krad, depth))
-    framed[krad:-krad, krad:-krad] = img
-
-    # filter
-    filtered = np.zeros(img.shape)
-    for i in range(0, height):
-        for j in range(0, width):
-            filtered[i, j] = (framed[i:i+ksize, j:j+ksize] * krn[:, :, np.newaxis]).sum(axis=(0,1))
-
-    return filtered
-
-# DELETE TOP FUNCTIONS !!!!!!!!!
-# --------------------------------------------------
+# Functions -------------------------------------------------------------------------
 
 def templateMatch(target, source, threshold):
     target_height, target_width, _ = target.shape
@@ -39,8 +14,6 @@ def templateMatch(target, source, threshold):
 
     for i in range(0, result_height):
         for j in range(0, result_width):
-            for x in range(0, source_height):
-                for y in range(0, source_width):
                     sqsum = 0
                     for xx in range(0, target_height):
                         for yy in range(0, target_width):
@@ -48,7 +21,7 @@ def templateMatch(target, source, threshold):
 
     return result
 
-# --------------------------------------------------
+# -----------------------------------------------------------------------------------
 
 target_image = cv2.imread("images/t1-img1.png")
 target_image = target_image / 255
