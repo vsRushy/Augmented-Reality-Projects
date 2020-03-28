@@ -4,83 +4,64 @@ from math import hypot
 
 # Functions -------------------------------------------------------------------------
 
+# Source is what we want to find and tarjet is the object where we want to find the source
 def templateMatch(target, source):
     target_height, target_width, _ = target.shape
     source_height, source_width, _ = source.shape
 
-    # if(): 
-    #     print("Images do not have the same shape :o, aborting template match...")
-    #     return [np.zeros((1,1)), 0]
-
     result_height = source_height - target_height + 1
     result_width = source_width - target_width + 1
 
-    result = np.zeros((result_height, result_width))
-
-
-
-    caption = np.zeros((source_height, source_width))
-    caption_y = 0
-    caption_x = 0
-    threshold_2 = 0.1
-    # Source is what we want to find and tarjet is the object where we want to find the source
+    indexes = [] # will contain an array of the i and j when a match is found
     ssd = 0
-    # for i in range(0, result_height):
-    #    for j in range(0, result_width):
-    #        diff = target[i][j] - source[i][j]
-    #        ssd += diff * diff
-    #        if ComparationSSD(ssd,threshold_2):
-    #            for i_2 in range (i, (i + source_height)):
-    #                for j_2 in range (j, (j + source_width)):
-    #                    diff_2 = target[i_2][j_2] - source[i_2][j_2]
-    #                    ssd += diff_2 * diff_2
-    #         if ComparationSSD(ssd,threshold_2):
-    #           caption_y = i
-    #           caption_x = j 
-    #         ssd = 0
-    
+
     for i in range(0, result_height):
         for j in range(0, result_width):
             diff = target[0][0] - source[i][j]
             ssd += diff * diff
-            if hypot(ssd[0],ssd[1],ssd[2]) <= 0.1:
-              for i_1 in range (0, target_height):
-                  for j_1 in range (0, target_width):
-                    n_diff = target[i_1][j_1] - source[i+i_1][j+j_1]
-                    ssd += n_diff * n_diff
-                    
-
-            if hypot(ssd[0],ssd[1],ssd[2]) <= 0.1:
-                print("lo hemos logrado")
-
-                
+            if CompareSSD(ssd, 0.1):
+                for i_1 in range (0, target_height):
+                    for j_1 in range (0, target_width):
+                        n_diff = target[i_1][j_1] - source[i+i_1][j+j_1]
+                        ssd += n_diff * n_diff
+            if CompareSSD(ssd, 0.1): 
+                print("Match found!")
+                indexes.append([i, j])
             ssd = 0
 
-
-    # for i in range(0, result_height):
-    #     for j in range(0, result_width):
-    #                 sqsum = 0
-    #                 for xx in range(0, target_height):
-    #                     for yy in range(0, target_width):
-    #                         sqsum += (source[x + xx, y + yy] - target[xx, yy])**2
-
-    return [result, ssd]
+    return indexes
 
 # -----------------------------------------------------------------------------------
 
+def CompareSSD(ssd, magnitude): 
+    if(hypot(ssd[0],ssd[1],ssd[2]) <= magnitude): 
+        return True
+    else: 
+        return False
 
+def fillMatch(img, index_i, index_j, width, height): 
+    return cv2.rectangle(img, (index_j, index_i), (index_j + height, index_i + width), (0, 255, 0), thickness=2)  
 
 target_image = cv2.imread("images/img1.png")
 target_image = target_image / 255
-cv2.imshow("Target Image", target_image)
+
 
 source_image = cv2.imread("images/t1-img1.png")
 source_image = source_image / 255
 cv2.imshow("Source Image", source_image)
 
 threshold = 0.1
-operationResultImage, operationSsd = templateMatch(source_image, target_image)
-#operationSsd = np.linalg.norm(operationSsd)
+indexes_result = templateMatch(source_image, target_image)
+
+source_height_result, source_width_result, _ = source_image.shape
+
+rects = []
+for i_i in range(len(indexes_result)): 
+    index = indexes_result[i_i]
+    rects.append(fillMatch(target_image, index[0], index[1], source_height_result, source_width_result))
+
+cv2.imshow("Target Image", target_image)
+
 
 # foundText = "Image Not Found"
 # if(operationSsd <= threshold): 
