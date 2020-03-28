@@ -40,13 +40,13 @@ def CompareSSD(ssd, magnitude):
         return False
 
 def fillMatch(img, index_i, index_j, width, height): 
-    return cv2.rectangle(img, (index_j, index_i), (index_j + height, index_i + width), (0, 255, 0), thickness=2)  
+    return cv2.rectangle(img, (index_j, index_i), (index_j + height, index_i + width), (0, 255, 0), thickness=1)  
 
-target_image = cv2.imread("images/img1.png")
+target_image = cv2.imread("images/img2.png")
 target_image = target_image / 255
 
 
-source_image = cv2.imread("images/t1-img1.png")
+source_image = cv2.imread("images/t1-img2.png")
 source_image = source_image / 255
 cv2.imshow("Source Image", source_image)
 
