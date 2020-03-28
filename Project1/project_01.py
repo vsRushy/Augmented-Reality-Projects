@@ -16,7 +16,7 @@ def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
     return resized
 
 # Source is what we want to find and tarjet is the object where we want to find the source
-def templateMatch(target, source, scaleFactor = 1.0):
+def templateMatch(target, source, threshold, scaleFactor = 1.0):
     target_height, target_width, _ = target.shape
     source_height, source_width, _ = source.shape
 
@@ -30,22 +30,21 @@ def templateMatch(target, source, scaleFactor = 1.0):
         for j in range(0, result_width):
             diff = target[0][0] - source[i][j]
             ssd += diff * diff
-            if CompareSSD(ssd, 0.1):
+            if CompareSSD(ssd, threshold):
                 for i_1 in range (0, target_height):
                     for j_1 in range (0, target_width):
                         n_diff = target[i_1][j_1] - source[i+i_1][j+j_1]
                         ssd += n_diff * n_diff
-            if CompareSSD(ssd, 0.1): 
-                print("Match found!")
+            if CompareSSD(ssd, threshold): 
+                print("Match found, ssd: " + str(ssd)) 
                 indexes.append([i, j])
-
-            print(ssd)    
             ssd = 0
      
     if(scaleFactor != 1.0): 
         for i in range(len(indexes)): 
             index_i = indexes[i]
-            index_i /= scaleFactor
+            index_i[0] =  (int)(index_i[0] / scaleFactor)
+            index_i[1] =  (int)(index_i[1] / scaleFactor)
     
     return indexes
 
@@ -74,8 +73,8 @@ source_image_resized = source_image_resized / 255
 
 cv2.imshow("Source Image", source_image)
 
-threshold = 0.1
-indexes_result = templateMatch(source_image_resized, target_image_resized, scaleFactorUsed)
+thresholdo = 2
+indexes_result = templateMatch(source_image_resized, target_image_resized, thresholdo, scaleFactorUsed)
 
 source_height_result, source_width_result, _ = source_image.shape
 
