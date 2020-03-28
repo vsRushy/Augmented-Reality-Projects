@@ -4,16 +4,13 @@ from math import hypot
 
 # Functions -------------------------------------------------------------------------
 
-def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
-    dim = None
+def imageResize(image, width = None, height = None, inter = cv2.INTER_AREA):
     (h, w) = image.shape[:2]
-
     r = width / float(w)
     dim = (width, int(h * r))
+    result = cv2.resize(image, dim, inter)
 
-    resized = cv2.resize(image, dim, interpolation = inter)
-
-    return resized
+    return result
 
 # Source is what we want to find and tarjet is the object where we want to find the source
 def templateMatch(target, source, threshold, scaleFactor = 1.0):
@@ -24,12 +21,14 @@ def templateMatch(target, source, threshold, scaleFactor = 1.0):
     result_width = source_width - target_width + 1
 
     indexes = [] # will contain an array of the i and j when a match is found
+    matchingMap = np.zeros(source.shape)
     ssd = 0
 
     for i in range(0, result_height):
         for j in range(0, result_width):
             diff = target[0][0] - source[i][j]
             ssd += diff * diff
+            matchingMap[i][j] = ssd
             if CompareSSD(ssd, threshold):
                 for i_1 in range (0, target_height):
                     for j_1 in range (0, target_width):
@@ -40,13 +39,14 @@ def templateMatch(target, source, threshold, scaleFactor = 1.0):
                 indexes.append([i, j])
             ssd = 0
      
+    # for down-scaled images, we need to upscale the found indexes
     if(scaleFactor != 1.0): 
         for i in range(len(indexes)): 
             index_i = indexes[i]
             index_i[0] =  (int)(index_i[0] / scaleFactor)
             index_i[1] =  (int)(index_i[1] / scaleFactor)
     
-    return indexes
+    return [indexes, matchingMap]
 
 # -----------------------------------------------------------------------------------
 
@@ -63,19 +63,18 @@ scaleFactorUsed = 0.5
 
 target_image = cv2.imread("images/img1.png")
 height_t, width_t, _ = target_image.shape
-target_image_resized = image_resize(target_image, (int)(width_t * scaleFactorUsed), (int)(height_t * scaleFactorUsed)) 
+target_image_resized = imageResize(target_image, (int)(width_t * scaleFactorUsed), (int)(height_t * scaleFactorUsed)) 
 target_image_resized = target_image_resized / 255
 
 source_image = cv2.imread("images/t1-img1.png")
 height_s, width_s, _ = source_image.shape 
-source_image_resized = image_resize(source_image, (int)(width_s * scaleFactorUsed), (int)(height_s * scaleFactorUsed))
+source_image_resized = imageResize(source_image, (int)(width_s * scaleFactorUsed), (int)(height_s * scaleFactorUsed))
 source_image_resized = source_image_resized / 255
 
 cv2.imshow("Source Image", source_image)
 
-thresholdo = 2
-indexes_result = templateMatch(source_image_resized, target_image_resized, thresholdo, scaleFactorUsed)
-
+thresholdo = 2 # use 0.1 threshold if scaleFactorUsed is 1.0
+indexes_result, matching_map = templateMatch(source_image_resized, target_image_resized, thresholdo, scaleFactorUsed)
 source_height_result, source_width_result, _ = source_image.shape
 
 rects = []
@@ -85,6 +84,7 @@ for i_i in range(len(indexes_result)):
 
 cv2.imshow("Target Image", target_image)
 
+cv2.imshow("Matching Map", matching_map)
 
 foundText = "Image Not Found"
 if(len(rects) >= 1): 
