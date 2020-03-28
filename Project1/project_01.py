@@ -21,14 +21,16 @@ def templateMatch(target, source, threshold, scaleFactor = 1.0):
     result_width = source_width - target_width + 1
 
     indexes = [] # will contain an array of the i and j when a match is found
-    matchingMap = np.zeros(source.shape)
+
+    mm_h, mm_w, _ = source.shape
+    matchingMap = np.zeros((mm_h, mm_w))
     ssd = 0
 
     for i in range(0, result_height):
         for j in range(0, result_width):
             diff = target[0][0] - source[i][j]
             ssd += diff * diff
-            matchingMap[i][j] = ssd
+            matchingMap[i][j] = hypot(ssd[0], ssd[1], ssd[2])
             if CompareSSD(ssd, threshold):
                 for i_1 in range (0, target_height):
                     for j_1 in range (0, target_width):
