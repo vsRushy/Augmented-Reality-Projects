@@ -4,6 +4,17 @@ from math import hypot
 
 # Functions -------------------------------------------------------------------------
 
+def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
+    dim = None
+    (h, w) = image.shape[:2]
+
+    r = width / float(w)
+    dim = (width, int(h * r))
+
+    resized = cv2.resize(image, dim, interpolation = inter)
+
+    return resized
+
 # Source is what we want to find and tarjet is the object where we want to find the source
 def templateMatch(target, source, scaleFactor = 1.0):
     target_height, target_width, _ = target.shape
@@ -27,6 +38,8 @@ def templateMatch(target, source, scaleFactor = 1.0):
             if CompareSSD(ssd, 0.1): 
                 print("Match found!")
                 indexes.append([i, j])
+
+            print(ssd)    
             ssd = 0
      
     if(scaleFactor != 1.0): 
@@ -47,14 +60,18 @@ def CompareSSD(ssd, magnitude):
 def fillMatch(img, index_i, index_j, width, height): 
     return cv2.rectangle(img, (index_j, index_i), (index_j + height, index_i + width), (0, 255, 0), thickness=2)  
 
-scaleFactorUsed = 1
+scaleFactorUsed = 0.5
+
 target_image = cv2.imread("images/img1.png")
-target_image = target_image / 255
-target_image_resized = cv2.resize(target_image, (0,0), fx=scaleFactorUsed, fy=scaleFactorUsed) 
+height_t, width_t, _ = target_image.shape
+target_image_resized = image_resize(target_image, (int)(width_t * scaleFactorUsed), (int)(height_t * scaleFactorUsed)) 
+target_image_resized = target_image_resized / 255
 
 source_image = cv2.imread("images/t1-img1.png")
-source_image = source_image / 255
-source_image_resized = cv2.resize(source_image, (0,0), fx=scaleFactorUsed, fy=scaleFactorUsed) 
+height_s, width_s, _ = source_image.shape 
+source_image_resized = image_resize(source_image, (int)(width_s * scaleFactorUsed), (int)(height_s * scaleFactorUsed))
+source_image_resized = source_image_resized / 255
+
 cv2.imshow("Source Image", source_image)
 
 threshold = 0.1
