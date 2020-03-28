@@ -89,26 +89,15 @@ cv2.imshow("Target Image", target_image)
 
 cv2.imshow("Matching Map", matching_map)
 
-foundText = "Image Not Found"
+text_image = np.zeros((40, 340, 3), np.uint8)
+
 if(len(rects) >= 1): 
-    foundText = "Image Found"
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    cv2.putText(text_image, "Target found", (5, 30), font, 1, (0, 255, 255), 2)
+else:
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    cv2.putText(text_image, "Target not found", (5, 30), font, 1, (0, 0, 255), 2)
 
-
-text_image = np.zeros((50, 1050, 3), np.uint8)
-font = cv2.FONT_HERSHEY_SIMPLEX
-bottom_left_corner_text = (10, 35)
-font_scale = 1
-font_color = (255, 255, 255)
-line_type = 2
-cv2.putText(
-    text_image,
-    foundText,
-    bottom_left_corner_text,
-    font,
-    font_scale,
-    font_color,
-    line_type
-    )
 cv2.imshow("Result", text_image)
 
 # Input ---------
