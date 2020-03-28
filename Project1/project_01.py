@@ -39,12 +39,13 @@ def templateMatch(target, source, threshold, scaleFactor = 1.0):
                 indexes.append([i, j])
             ssd = 0
      
-    # for down-scaled images, we need to upscale the found indexes
+    # for down-scaled images, we need to upscale the found indexes and the matching map
     if(scaleFactor != 1.0): 
         for i in range(len(indexes)): 
             index_i = indexes[i]
             index_i[0] =  (int)(index_i[0] / scaleFactor)
             index_i[1] =  (int)(index_i[1] / scaleFactor)
+        matchingMap = imageResize(matchingMap, (int)(source_width / scaleFactor), (int)(source_height / scaleFactor))
     
     return [indexes, matchingMap]
 
