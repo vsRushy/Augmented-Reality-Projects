@@ -64,26 +64,26 @@ def fillMatch(img, index_i, index_j, width, height):
 
 scaleFactorUsed = 0.5
 
-target_image = cv2.imread("images/img1.png")
+target_image = cv2.imread("images/t1-img1.png")
 height_t, width_t, _ = target_image.shape
 target_image_resized = imageResize(target_image, (int)(width_t * scaleFactorUsed), (int)(height_t * scaleFactorUsed)) 
 target_image_resized = target_image_resized / 255
 
-source_image = cv2.imread("images/t1-img1.png")
+source_image = cv2.imread("images/img1.png")
 height_s, width_s, _ = source_image.shape 
 source_image_resized = imageResize(source_image, (int)(width_s * scaleFactorUsed), (int)(height_s * scaleFactorUsed))
 source_image_resized = source_image_resized / 255
 
-cv2.imshow("Source Image", source_image)
-
 thresholdo = 2 # use 0.1 threshold if scaleFactorUsed is 1.0
-indexes_result, matching_map = templateMatch(source_image_resized, target_image_resized, thresholdo, scaleFactorUsed)
+indexes_result, matching_map = templateMatch(target_image_resized, source_image_resized, thresholdo, scaleFactorUsed)
 source_height_result, source_width_result, _ = source_image.shape
 
 rects = []
 for i_i in range(len(indexes_result)): 
     index = indexes_result[i_i]
-    rects.append(fillMatch(target_image, index[0], index[1], source_height_result, source_width_result))
+    rects.append(fillMatch(source_image, index[0], index[1], height_t, width_t))
+
+cv2.imshow("Source Image", source_image)
 
 cv2.imshow("Target Image", target_image)
 
