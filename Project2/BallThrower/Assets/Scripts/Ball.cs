@@ -31,34 +31,15 @@ public class Ball : MonoBehaviour
                 Z = 360 + Z;
 
 
-            float X = 0.0f, Y = 0.0f;
-            switch (Z)
-            {
-                case float n when (Z <= 90):
-                    X = Mathf.Cos(Z);
-                    Y = Mathf.Sin(Z);
-                    break; 
-                case float n when ((Z > 90) && (Z <= 180)):
-                    X = -Mathf.Cos(Z);
-                    Y = Mathf.Sin(Z);
-                    break;
-                case float n when ((Z > 180) && (Z <= 270)):
-                    X = -Mathf.Cos(Z);
-                    Y = -Mathf.Sin(Z);
-                    break; 
-                case float n when (Z > 270):
-                    X = Mathf.Cos(Z);
-                    Y = -Mathf.Sin(Z);
-                    break;
-            }
-
-
+            float X = Mathf.Cos(Z * Mathf.Deg2Rad);
+            float Y = Mathf.Sin(Z * Mathf.Deg2Rad); 
+       
             Vector3 forceVector = new Vector3(X, Y, 0) * forceStrength; 
             body.AddForce(forceVector, ForceMode.Impulse); 
             arrow.transform.rotation = Quaternion.identity; 
             arrow.SetActive(false);
 
-            Debug.Log("Ball launched with Z rotation: " + Z + "and force: " + forceVector); 
+            Debug.Log("Ball launched with angle: " + Z + ", cos: " + X + ", sin: " + Y + " and force: " + forceVector); 
         }
           
     }
