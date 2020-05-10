@@ -36,8 +36,8 @@ public class Ball : MonoBehaviour
        
             Vector3 forceVector = new Vector3(X, Y, 0) * forceStrength; 
             body.AddForce(forceVector, ForceMode.Impulse); 
-            arrow.transform.rotation = Quaternion.identity; 
-            arrow.SetActive(false);
+            arrow.transform.rotation = Quaternion.identity;
+            arrow.GetComponent<Image>().enabled = false;
 
             Debug.Log("Ball launched with angle: " + Z + ", cos: " + X + ", sin: " + Y + " and force: " + forceVector); 
         }
@@ -52,7 +52,7 @@ public class Ball : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 clicked = true;
-                arrow.SetActive(true); 
+                arrow.GetComponent<Image>().enabled = true; 
             }
         }
         else
