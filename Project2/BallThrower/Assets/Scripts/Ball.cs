@@ -25,12 +25,33 @@ public class Ball : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Mouse0))
         {
             body.useGravity = true;
-            Vector3 forceVector = new Vector3(arrowRotation, arrowRotation - 90, 0) * forceStrength; 
-            body.AddForce(forceVector, ForceMode.Impulse); // TODO
+            float Z = arrow.transform.rotation.eulerAngles.z;
+
+            float X = Mathf.Cos(Z);
+            float Y = Mathf.Sin(Z); 
+
+            if ((Z > 90) && (Z <= 180))
+            {
+                X = -Mathf.Cos(Z);
+                Y = Mathf.Sin(Z);
+            }
+            else if ((Z > 180) && (Z <= 270))
+            {
+                X = -Mathf.Cos(Z);
+                Y = -Mathf.Sin(Z);
+            }
+            else if(Z > 270)
+            {
+                X = Mathf.Cos(Z);
+                Y = -Mathf.Sin(Z);
+            }
+          
+            Vector3 forceVector = new Vector3(X, Y, 0) * forceStrength; 
+            body.AddForce(forceVector, ForceMode.Impulse); 
             arrow.transform.rotation = Quaternion.identity; 
             arrow.SetActive(false);
 
-            Debug.Log("Ball launched with angle in z " + arrowRotation + "and force: " + forceVector); 
+            Debug.Log("Ball launched with force: " + forceVector); 
         }
           
     }
