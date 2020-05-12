@@ -8,7 +8,7 @@ public class Ball : MonoBehaviour
     // Start is called before the first frame update
     public GameObject arrow;
     public float forceStrength = 5.0f; 
-    private Rigidbody body;
+    public Rigidbody body;
     bool clicked = false;
 
     void Start()
@@ -63,5 +63,11 @@ public class Ball : MonoBehaviour
             arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward); 
 
         }
+    }
+
+
+    void OnBecameInvisible()
+    {
+        GameObject.Find("BallManager").GetComponent<BallSpawner>().NewBall(); 
     }
 }
