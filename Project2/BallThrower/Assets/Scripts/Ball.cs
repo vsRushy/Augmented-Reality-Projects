@@ -7,18 +7,28 @@ public class Ball : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject arrow;
-    public float forceStrength = 5.0f; 
+    public float forceStrength = 5.0f;
+    [HideInInspector]
     public Rigidbody body;
     bool clicked = false;
+    bool alive = false; 
 
-    void Start()
+    void Awake()
     {
         body = gameObject.GetComponent<Rigidbody>();
+        body.useGravity = false; 
+
+        if (arrow == null)
+            arrow = GameObject.Find("Arrow");
+
+        alive = true; 
     }
 
     // Update is called once per frame
     void Update()
     {
+        Debug.Log("BALL UPDATE..."); 
+
         SetArrow(); 
 
         // Activate rigidbody and impulse it with the arrow direction 
@@ -44,6 +54,7 @@ public class Ball : MonoBehaviour
           
     }
 
+  
     void SetArrow()
     {
         if(!clicked)
@@ -68,6 +79,6 @@ public class Ball : MonoBehaviour
 
     void OnBecameInvisible()
     {
-        GameObject.Find("BallManager").GetComponent<BallSpawner>().NewBall(); 
+        GameObject.Find("BallManager").GetComponent<BallSpawner>().NewBall(false); 
     }
 }
