@@ -43,9 +43,10 @@ public class Ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(lauchPhase == LauchPhase.HORIZONTAL)
+        RotateArrow();
+
+        if (lauchPhase == LauchPhase.HORIZONTAL)
         {
-            RotateArrow(); 
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
@@ -55,10 +56,13 @@ public class Ball : MonoBehaviour
                 arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);*/
 
                 // Arrow and Power
-                arrow.GetComponent<Image>().enabled = false;
+            //   arrow.GetComponent<Image>().enabled = false; // this bugs the arrow in the next ball XD
 
                 // Phase
-                lauchPhase = LauchPhase.POWER;  
+                lauchPhase = LauchPhase.POWER;
+
+                // TODO: comment this
+                LaunchBall(); 
             }
         }
         else if (lauchPhase == LauchPhase.POWER)
@@ -89,6 +93,15 @@ public class Ball : MonoBehaviour
             Debug.Log("Ball launched with angle: " + Z + ", cos: " + X + ", sin: " + Y + " and force: " + forceVector); 
         }*/
           
+    }
+
+    void LaunchBall()
+    {
+        body.useGravity = true;
+       
+        Vector3 forceVector = new Vector3(arrow_transform.transform.rotation.eulerAngles.y / 2, 90, 90).normalized * forceStrength;
+        body.AddForce(forceVector, ForceMode.Impulse);
+       
     }
 
     void RotateArrow()
