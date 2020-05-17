@@ -43,21 +43,12 @@ public class Ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        RotateArrow();
-
         if (lauchPhase == LauchPhase.HORIZONTAL)
         {
+            RotateArrow();
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                // Mouse position
-               /* var dir = Input.mousePosition - Camera.main.WorldToScreenPoint(arrow.transform.position);
-                var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-                arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);*/
-
-                // Arrow and Power
-            //   arrow.GetComponent<Image>().enabled = false; // this bugs the arrow in the next ball XD
-
                 // Phase
                 lauchPhase = LauchPhase.POWER;
 
@@ -69,37 +60,21 @@ public class Ball : MonoBehaviour
         {
 
         }
-        Debug.Log("BALL UPDATE..."); 
 
-
-        // Activate rigidbody and impulse it with the arrow direction 
-       /* if (clicked && Input.GetKeyUp(KeyCode.Mouse0))
-        {
-            body.useGravity = true;
-            float Z = arrow.transform.localRotation.eulerAngles.z;
-
-            if (Z < 0)
-                Z = 360 + Z;
-
-
-            float X = Mathf.Cos(Z * Mathf.Deg2Rad);
-            float Y = Mathf.Sin(Z * Mathf.Deg2Rad); 
-       
-            Vector3 forceVector = new Vector3(X, Y, 0) * forceStrength; 
-            body.AddForce(forceVector, ForceMode.Impulse); 
-            arrow.transform.rotation = Quaternion.identity;
-            arrow.GetComponent<Image>().enabled = false;
-
-            Debug.Log("Ball launched with angle: " + Z + ", cos: " + X + ", sin: " + Y + " and force: " + forceVector); 
-        }*/
-          
     }
 
     void LaunchBall()
     {
+        arrow.GetComponent<Image>().enabled = false; // this bugs the arrow in the next ball XD
+
         body.useGravity = true;
-       
-        Vector3 forceVector = new Vector3(arrow_transform.transform.rotation.eulerAngles.y / 2, 90, 90).normalized * forceStrength;
+
+        float alpha = arrow_transform.rotation.eulerAngles.y + 180f;
+        float omega = 90f - alpha;
+        float side = arrow_transform.rect.width;
+        float result = (Mathf.Sin(alpha * Mathf.Deg2Rad) * side) / (Mathf.Sin(omega * Mathf.Deg2Rad));
+
+        Vector3 forceVector = new Vector3(result, side, side).normalized * forceStrength; // same force upwards and forwards (45 degrees) 
         body.AddForce(forceVector, ForceMode.Impulse);
        
     }

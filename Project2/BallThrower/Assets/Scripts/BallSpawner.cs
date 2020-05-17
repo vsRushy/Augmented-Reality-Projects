@@ -16,6 +16,7 @@ public class BallSpawner : MonoBehaviour
 
     void Start()
     {
+        arrow_start_rotation = arrow.GetComponent<RectTransform>().rotation; 
         NewBall(false);
         Debug.Log("Arrow detected with rotation: " + arrow_start_rotation); 
     }
@@ -51,7 +52,9 @@ public class BallSpawner : MonoBehaviour
             textComp.text = (int.Parse(textComp.text) + 1).ToString(); 
         }
 
-        
+        // Arrow
+        arrow.GetComponent<RectTransform>().rotation = arrow_start_rotation;
+        arrow.GetComponent<Image>().enabled = true;
 
     }
 }
