@@ -9,7 +9,8 @@ public class BallSpawner : MonoBehaviour
     public GameObject position;
     public GameObject uiScore;
     public GameObject arrow;
-    Quaternion arrow_start_rotation; 
+    Quaternion arrow_start_rotation;
+    Scrollbar power_bar; 
 
     public float max_time = 7.0f;
     private float current_time = 0.0f;
@@ -18,7 +19,8 @@ public class BallSpawner : MonoBehaviour
     {
         arrow_start_rotation = arrow.GetComponent<RectTransform>().rotation; 
         NewBall(false);
-        Debug.Log("Arrow detected with rotation: " + arrow_start_rotation); 
+        Debug.Log("Arrow detected with rotation: " + arrow_start_rotation);
+        power_bar = GameObject.Find("Power").GetComponent<Scrollbar>();
     }
 
    /*void Update()
@@ -57,4 +59,8 @@ public class BallSpawner : MonoBehaviour
         arrow.GetComponent<Image>().enabled = true;
 
     }
+
+
+
+   
 }

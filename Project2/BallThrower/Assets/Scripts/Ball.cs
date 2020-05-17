@@ -16,10 +16,14 @@ public class Ball : MonoBehaviour
     float current_arrow_cycle_time = 0.0f; 
     float start_Y_angle = 0.0f; 
     public float forceStrength = 5.0f;
-    bool first_arrow_cycle = true; 
+    float prevention_time = 0.3f;
+    float current_prevention_time = 0f; 
+    Scrollbar power_bar;
+    LauchPhase lauchPhase;
+    bool first_arrow_cycle = true;
     [HideInInspector]
     public Rigidbody body;
-    LauchPhase lauchPhase; 
+
 
     void Awake()
     {
@@ -32,6 +36,8 @@ public class Ball : MonoBehaviour
             arrow = GameObject.Find("Arrow");
         if (force == null)
             force = GameObject.Find("Arrow");
+        if (power_bar == null)
+            power_bar = GameObject.Find("Power").GetComponent<Scrollbar>(); 
 
         arrow_transform = arrow.GetComponent<RectTransform>(); 
         start_Y_angle = arrow_transform.rotation.eulerAngles.y;
@@ -48,33 +54,50 @@ public class Ball : MonoBehaviour
             RotateArrow();
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                // Phase
                 lauchPhase = LauchPhase.POWER;
-
-                // TODO: comment this
-                LaunchBall(); 
-            }
+         
         }
         else if (lauchPhase == LauchPhase.POWER)
-        {
-
-        }
+            LaunchBallLogic(); 
 
     }
 
-    void LaunchBall()
+    public void LaunchBallLogic()
     {
-        arrow.GetComponent<Image>().enabled = false; // this bugs the arrow in the next ball XD
+        current_prevention_time += Time.deltaTime; 
+        Debug.Log("Prevention time is " + current_prevention_time);
 
-        body.useGravity = true;
+        // to not confuse the last arrow click
+        if (current_prevention_time <= prevention_time)
+            return;
 
+        // Change colors
+       /* float r = power_bar.value;
+        float g = 100 - r;
+        ColorBlock cb = new ColorBlock();
+        cb.selectedColor = new Color(r / 100f, g / 100f, 0);
+        power_bar.colors = cb;*/
+
+        Debug.Log("Power bar value: " + power_bar.value); 
+
+        // only launch ball when releasing
+        if ((Input.GetKeyUp(KeyCode.Mouse0) == false))
+            return;
+
+        Debug.Log("Ball about to be launched!"); 
+
+        // Arrow
+        arrow.GetComponent<Image>().enabled = false; 
+   
+        // Math
         float alpha = arrow_transform.rotation.eulerAngles.y + 180f;
         float omega = 90f - alpha;
         float side = arrow_transform.rect.width;
         float result = (Mathf.Sin(alpha * Mathf.Deg2Rad) * side) / (Mathf.Sin(omega * Mathf.Deg2Rad));
 
-        Vector3 forceVector = new Vector3(result, side, side).normalized * forceStrength; // same force upwards and forwards (45 degrees) 
+        // same force upwards and forwards (45 degrees) 
+        body.useGravity = true;
+        Vector3 forceVector = new Vector3(result, side, side).normalized * forceStrength * power_bar.value; 
         body.AddForce(forceVector, ForceMode.Impulse);
        
     }
