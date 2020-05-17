@@ -35,24 +35,25 @@ public class BallSpawner : MonoBehaviour
 
     public void NewBall(bool success)
     {
-        Debug.Log("New ball to be spawned, success: " + success); 
+        Debug.Log("New ball to be spawned, success: " + success);
 
         // Destroy previous ball
         var previousBall = GameObject.Find("Ball");
         if (previousBall)
-            Destroy(previousBall); 
-
-        // Create new ball
-        var ball = Instantiate(prefab, position.transform.position, Quaternion.identity) as GameObject;
-        ball.name = "Ball";
-        ball.GetComponent<Ball>().enabled = true; // ... Unity is utter rubish and spawns with the script disabled
+            Destroy(previousBall);
 
         // Score
         if (success)
         {
             var textComp = uiScore.GetComponent<Text>();
-            textComp.text = (int.Parse(textComp.text) + 1).ToString(); 
+            textComp.text = (int.Parse(textComp.text) + 1).ToString();
+            return; 
         }
+
+        // Create new ball
+        var ball = Instantiate(prefab, position.transform.position, Quaternion.identity) as GameObject;
+        ball.name = "Ball";
+        ball.GetComponent<Ball>().enabled = true; // ... Unity is utter rubish and spawns with the script disabled
 
         // Arrow
         arrow.GetComponent<RectTransform>().rotation = arrow_start_rotation;
