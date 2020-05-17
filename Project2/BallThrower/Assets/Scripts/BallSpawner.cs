@@ -9,13 +9,15 @@ public class BallSpawner : MonoBehaviour
     public GameObject position;
     public GameObject uiScore;
     public GameObject arrow;
+    Quaternion arrow_start_rotation; 
 
     public float max_time = 7.0f;
     private float current_time = 0.0f;
 
     void Start()
     {
-        NewBall(false); 
+        NewBall(false);
+        Debug.Log("Arrow detected with rotation: " + arrow_start_rotation); 
     }
 
    /*void Update()
@@ -49,8 +51,7 @@ public class BallSpawner : MonoBehaviour
             textComp.text = (int.Parse(textComp.text) + 1).ToString(); 
         }
 
-        // Reset Arrow
-        arrow.transform.rotation = Quaternion.identity;
+        
 
     }
 }
