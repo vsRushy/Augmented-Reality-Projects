@@ -43,6 +43,7 @@ public class Ball : MonoBehaviour
         start_Y_angle = arrow_transform.rotation.eulerAngles.y;
         current_arrow_rotation_speed = arrow_rotation_speed;
 
+        SetPowerColors(); 
         Debug.Log("Arrow starts with this Y angle:" + start_Y_angle); 
     }
 
@@ -62,6 +63,19 @@ public class Ball : MonoBehaviour
 
     }
 
+    void SetPowerColors()
+    {
+        float r = power_bar.value;
+        float g = 1f - r;
+        ColorBlock cb = new ColorBlock();
+        cb.pressedColor = new Color(r, g, 0f);
+        cb.highlightedColor = Color.black;
+        cb.normalColor = Color.black;
+        cb.selectedColor = Color.black;
+        cb.colorMultiplier = 5f;
+        power_bar.colors = cb;
+    }
+
     public void LaunchBallLogic()
     {
         current_prevention_time += Time.deltaTime; 
@@ -72,13 +86,7 @@ public class Ball : MonoBehaviour
             return;
 
         // Change colors
-       /* float r = power_bar.value;
-        float g = 100 - r;
-        ColorBlock cb = new ColorBlock();
-        cb.selectedColor = new Color(r / 100f, g / 100f, 0);
-        power_bar.colors = cb;*/
-
-        Debug.Log("Power bar value: " + power_bar.value); 
+        SetPowerColors(); 
 
         // only launch ball when releasing
         if ((Input.GetKeyUp(KeyCode.Mouse0) == false))

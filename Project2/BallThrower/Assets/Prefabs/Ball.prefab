@@ -127,5 +127,5 @@ MonoBehaviour:
   force: {fileID: 0}
   arrow_rotation_speed: 50
   arrow_cycle_time: 2
-  forceStrength: 7
+  forceStrength: 12
   body: {fileID: 0}
