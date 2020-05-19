@@ -7,7 +7,6 @@ public enum LauchPhase { HORIZONTAL, POWER, LAUNCHED}
 public class Ball : MonoBehaviour
 {
     // Start is called before the first frame update
-    public GameObject arrow;
     GameObject camera; 
     RectTransform arrow_transform; 
     public GameObject force;
@@ -34,22 +33,16 @@ public class Ball : MonoBehaviour
 
         body = gameObject.GetComponent<Rigidbody>();
         col = gameObject.GetComponent<Collider>(); 
-        body.isKinematic = true; 
         body.useGravity = false;
-        col.enabled = false; 
+      /*  body.isKinematic = true;
+        col.enabled = false; */
 
-        if (arrow == null)
-            arrow = GameObject.Find("Arrow");
         if (force == null)
             force = GameObject.Find("Arrow");
         if (power_bar == null)
             power_bar = GameObject.Find("Power").GetComponent<Scrollbar>();
 
         camera = GameObject.Find("ARCamera"); 
-
-        arrow_transform = arrow.GetComponent<RectTransform>(); 
-        start_Y_angle = arrow_transform.rotation.eulerAngles.y;
-        current_arrow_rotation_speed = arrow_rotation_speed;
 
         audioSource = GameObject.Find("SFX").GetComponent<AudioSource>();
         audioSource.Stop();
@@ -64,8 +57,6 @@ public class Ball : MonoBehaviour
     {
         if (lauchPhase == LauchPhase.HORIZONTAL)
         {
-            RotateArrow();
-
             if (Input.GetKeyDown(KeyCode.Mouse0))
                 lauchPhase = LauchPhase.POWER;
          
@@ -80,11 +71,9 @@ public class Ball : MonoBehaviour
     void SetWithCamera()
     {
         transform.position = camera.transform.position + camera.transform.forward * 0.5f;
-        arrow.transform.position = camera.transform.position + camera.transform.forward * 0.5f;
 
         // a bit downwards
-        transform.position -= new Vector3(0f, 0.2f, 0f);
-        arrow.transform.position -= new Vector3(0f, 0.5f, -0.2f);
+        transform.position -= camera.transform.up * 0.1f; 
     }
 
     void SetPowerColors()
@@ -118,20 +107,14 @@ public class Ball : MonoBehaviour
 
         Debug.Log("Ball about to be launched!"); 
 
-        // Arrow
-        arrow.GetComponent<Image>().enabled = false; 
-   
-        // Math
-        float alpha = arrow_transform.rotation.eulerAngles.y + 180f;
-        float omega = 90f - alpha;
-        float side = arrow_transform.rect.width;
-        float result = (Mathf.Sin(alpha * Mathf.Deg2Rad) * side) / (Mathf.Sin(omega * Mathf.Deg2Rad));
-
         // same force upwards and forwards (45 degrees) 
         body.useGravity = true;
-        body.isKinematic = false;
-        col.enabled = true; 
-        Vector3 forceVector = new Vector3(result, side, side).normalized * forceStrength * power_bar.value; 
+       /* body.isKinematic = false;
+        col.enabled = true;*/
+
+        // Launch in camera direction but with an upwards angle
+        Vector3 direction = (camera.transform.forward + new Vector3(0, 1f, 0)).normalized; 
+        Vector3 forceVector = direction * forceStrength * power_bar.value; 
         body.AddForce(forceVector, ForceMode.Impulse);
 
         // Audio
@@ -142,26 +125,6 @@ public class Ball : MonoBehaviour
         lauchPhase = LauchPhase.LAUNCHED; 
     }
 
-
-    void RotateArrow()
-    {
-        current_arrow_cycle_time += Time.deltaTime; 
-        arrow_transform.Rotate(Vector3.up, current_arrow_rotation_speed * Time.deltaTime, Space.World);
-
-        float total_time = current_arrow_cycle_time;
-        if (first_arrow_cycle)
-            total_time *= 2; 
-
-        if (total_time >= arrow_cycle_time)
-        {
-            if (first_arrow_cycle)
-                first_arrow_cycle = false; 
-
-            current_arrow_cycle_time = 0.0f;
-            current_arrow_rotation_speed *= -1;
-        }
-
-    }
 
 
     void OnBecameInvisible()

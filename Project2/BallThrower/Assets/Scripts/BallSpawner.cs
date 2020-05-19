@@ -8,8 +8,6 @@ public class BallSpawner : MonoBehaviour
     public GameObject prefab;
     public GameObject position;
     public GameObject uiScore;
-    public GameObject arrow;
-    Quaternion arrow_start_rotation;
     Scrollbar power_bar; 
 
     public float max_time = 7.0f;
@@ -17,9 +15,7 @@ public class BallSpawner : MonoBehaviour
 
     void Start()
     {
-        arrow_start_rotation = arrow.GetComponent<RectTransform>().rotation; 
         NewBall(false);
-        Debug.Log("Arrow detected with rotation: " + arrow_start_rotation);
         power_bar = GameObject.Find("Power").GetComponent<Scrollbar>();
     }
 
@@ -53,12 +49,7 @@ public class BallSpawner : MonoBehaviour
         // Create new ball
         var ball = Instantiate(prefab, position.transform.position, Quaternion.identity) as GameObject;
         ball.name = "Ball";
-        ball.GetComponent<Ball>().enabled = true; // ... Unity is utter rubish and spawns with the script disabled
-
-        // Arrow
-        arrow.GetComponent<RectTransform>().rotation = arrow_start_rotation;
-        arrow.GetComponent<Image>().enabled = true;
-
+        ball.GetComponent<Ball>().enabled = true; // ... Unity is utter rubish and spawns with the script disable
     }
 
 
