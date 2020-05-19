@@ -23,6 +23,11 @@ public class Ball : MonoBehaviour
     Scrollbar power_bar;
     LauchPhase lauchPhase;
     AudioSource audioSource;
+
+
+    public GameObject Nice_Shot;
+    public GameObject Beast;
+
     [HideInInspector]
     public Rigidbody body;
 
@@ -45,7 +50,11 @@ public class Ball : MonoBehaviour
 
         audioSource = GameObject.Find("SFX").GetComponent<AudioSource>();
         SetPowerColors(); 
-        Debug.Log("Arrow starts with this Y angle:" + start_Y_angle); 
+        Debug.Log("Arrow starts with this Y angle:" + start_Y_angle);
+
+        Nice_Shot = GameObject.Find("Nice_Shot");
+        Beast = GameObject.Find("Nice_shot2");
+
     }
 
     // Update is called once per frame
@@ -167,7 +176,11 @@ public class Ball : MonoBehaviour
         audioSource.Play();
 
         // Phase
-        lauchPhase = LauchPhase.LAUNCHED; 
+        lauchPhase = LauchPhase.LAUNCHED;
+
+
+        Nice_Shot.SetActive(false);
+        Beast.SetActive(false);
     }
 
 
@@ -182,10 +195,17 @@ public class Ball : MonoBehaviour
         if (lauchPhase != LauchPhase.LAUNCHED)
             return;
 
+
+        Debug.Log("hemos llegado hasta aqui");
+
         audioSource.volume = 1f;
         string path = "Sound/miss"; 
         if (col.collider.name == "SuccessPoint")
+        {
             path = "Sound/canasta";
+           
+        }
+            
         audioSource.clip = Resources.Load(path) as AudioClip;
         audioSource.Play(); 
     }

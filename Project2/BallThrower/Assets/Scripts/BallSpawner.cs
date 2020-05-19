@@ -8,7 +8,16 @@ public class BallSpawner : MonoBehaviour
     public GameObject prefab;
     public GameObject position;
     public GameObject uiScore;
-    Scrollbar power_bar; 
+    Scrollbar power_bar;
+
+
+    public GameObject Nice_Shot;
+    public GameObject Beast;
+
+    AudioSource audioSource;
+
+
+
 
     public float max_time = 7.0f;
     private float current_time = 0.0f;
@@ -17,6 +26,14 @@ public class BallSpawner : MonoBehaviour
     {
         NewBall(false);
         power_bar = GameObject.Find("Power").GetComponent<Scrollbar>();
+
+        Nice_Shot = GameObject.Find("Nice_Shot");
+        Beast = GameObject.Find("Nice_shot2");
+
+        Nice_Shot.SetActive(false);
+        Beast.SetActive(false);
+
+        audioSource = GameObject.Find("SFX").GetComponent<AudioSource>();
     }
 
    /*void Update()
@@ -43,6 +60,24 @@ public class BallSpawner : MonoBehaviour
         {
             var textComp = uiScore.GetComponent<Text>();
             textComp.text = (int.Parse(textComp.text) + 1).ToString();
+
+            audioSource.volume = 1f;
+            string path = "Sound/canasta";
+
+            audioSource.clip = Resources.Load(path) as AudioClip;
+            audioSource.Play();
+
+            int h = Random.Range(0, 2);
+            if (h == 0)
+            {
+                Nice_Shot.SetActive(true);
+            }
+            else
+            {
+                Beast.SetActive(true);
+            }
+
+
             return; 
         }
 
