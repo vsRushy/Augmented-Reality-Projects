@@ -124,9 +124,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   force: {fileID: 0}
-  arrow_rotation_speed: 50
-  arrow_cycle_time: 2
   distance_to_ARCamera: 0.15
   down_from_ARCamera: 0.025
+  total_displacement_X: 0.07
+  horizontal_speed: 0.04
   forceStrength: 3
   body: {fileID: 0}
