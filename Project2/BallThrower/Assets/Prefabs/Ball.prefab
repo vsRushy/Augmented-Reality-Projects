@@ -128,7 +128,7 @@ MonoBehaviour:
   down_from_ARCamera: 0.15
   total_displacement_X: 1
   horizontal_speed: 0.4
-  forceStrength: 3
+  forceStrength: 5
   ten_points: 0
   Nice_Shot: {fileID: 0}
   Beast: {fileID: 0}
