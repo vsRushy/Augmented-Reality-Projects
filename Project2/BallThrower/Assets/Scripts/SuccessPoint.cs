@@ -19,8 +19,11 @@ public class SuccessPoint : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider.name == "Ball")
+        if (collision.collider.name == "Ball")
+        {
             GameObject.Find("BallManager").GetComponent<BallSpawner>().NewBall(true);
+            ++ScoreManager.score;
+        }
 
     }
 }
