@@ -10,7 +10,7 @@ public class Ball : MonoBehaviour
     GameObject camera; 
     public GameObject force;
     public float distance_to_ARCamera = 0.15f;
-    public float down_from_ARCamera = 0.025f;
+    public float down_from_ARCamera = 3;
     public float total_displacement_X = 0.75f;
     public float horizontal_speed = 0.5f;
     float current_displacement = 0f; 
@@ -125,7 +125,8 @@ public class Ball : MonoBehaviour
                  + camera.transform.forward * distance_to_ARCamera;
 
         // a bit downwards
-        transform.position -= camera.transform.up * down_from_ARCamera; 
+        transform.position -= camera.transform.up * down_from_ARCamera;
+        
     }
 
     bool ArrivedOneSide(float displacement, float total_displacement)
