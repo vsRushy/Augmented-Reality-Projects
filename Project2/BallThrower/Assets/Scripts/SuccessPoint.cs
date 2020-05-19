@@ -5,15 +5,16 @@ using UnityEngine;
 public class SuccessPoint : MonoBehaviour
 {
     // Start is called before the first frame update
+    MeshRenderer meshRenderer; 
     void Start()
     {
-        
+        meshRenderer = GetComponent<MeshRenderer>(); 
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        meshRenderer.enabled = false; // vuforia changes this!
     }
 
 

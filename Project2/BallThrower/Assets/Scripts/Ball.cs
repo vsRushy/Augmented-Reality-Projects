@@ -8,20 +8,17 @@ public class Ball : MonoBehaviour
 {
     // Start is called before the first frame update
     GameObject camera; 
-    RectTransform arrow_transform; 
     public GameObject force;
     public float arrow_rotation_speed = 10f;
-    float current_arrow_rotation_speed = 0.0f; 
     public float arrow_cycle_time = 2.0f;
-    float current_arrow_cycle_time = 0.0f; 
+    public float distance_to_ARCamera = 0.15f;
+    public float down_from_ARCamera = 0.025f; 
     float start_Y_angle = 0.0f; 
     public float forceStrength = 5.0f;
     float prevention_time = 0.3f;
     float current_prevention_time = 0f; 
     Scrollbar power_bar;
-    Collider col; 
     LauchPhase lauchPhase;
-    bool first_arrow_cycle = true;
     AudioSource audioSource; 
     [HideInInspector]
     public Rigidbody body;
@@ -32,10 +29,7 @@ public class Ball : MonoBehaviour
         lauchPhase = LauchPhase.HORIZONTAL; 
 
         body = gameObject.GetComponent<Rigidbody>();
-        col = gameObject.GetComponent<Collider>(); 
         body.useGravity = false;
-      /*  body.isKinematic = true;
-        col.enabled = false; */
 
         if (force == null)
             force = GameObject.Find("Arrow");
@@ -70,10 +64,10 @@ public class Ball : MonoBehaviour
 
     void SetWithCamera()
     {
-        transform.position = camera.transform.position + camera.transform.forward * 0.5f;
+        transform.position = camera.transform.position + camera.transform.forward * distance_to_ARCamera;
 
         // a bit downwards
-        transform.position -= camera.transform.up * 0.1f; 
+        transform.position -= camera.transform.up * down_from_ARCamera; 
     }
 
     void SetPowerColors()
@@ -107,10 +101,8 @@ public class Ball : MonoBehaviour
 
         Debug.Log("Ball about to be launched!"); 
 
-        // same force upwards and forwards (45 degrees) 
+        // Body
         body.useGravity = true;
-       /* body.isKinematic = false;
-        col.enabled = true;*/
 
         // Launch in camera direction but with an upwards angle
         Vector3 direction = (camera.transform.forward + new Vector3(0, 1f, 0)).normalized; 
