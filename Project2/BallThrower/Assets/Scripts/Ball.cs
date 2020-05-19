@@ -44,9 +44,6 @@ public class Ball : MonoBehaviour
         camera = GameObject.Find("ARCamera"); 
 
         audioSource = GameObject.Find("SFX").GetComponent<AudioSource>();
-        audioSource.Stop();
-        audioSource.clip = Resources.Load("Sound/throw") as AudioClip;
-
         SetPowerColors(); 
         Debug.Log("Arrow starts with this Y angle:" + start_Y_angle); 
     }
@@ -165,6 +162,7 @@ public class Ball : MonoBehaviour
         body.AddForce(forceVector, ForceMode.Impulse);
 
         // Audio
+        audioSource.clip = Resources.Load("Sound/throw") as AudioClip;
         audioSource.volume = power_bar.value; 
         audioSource.Play();
 
@@ -182,8 +180,13 @@ public class Ball : MonoBehaviour
     void OnCollisionEnter(Collision col)
     {
         if (lauchPhase != LauchPhase.LAUNCHED)
-            return; 
+            return;
 
-
+        audioSource.volume = 1f;
+        string path = "Sound/miss"; 
+        if (col.collider.name == "SuccessPoint")
+            path = "Sound/canasta";
+        audioSource.clip = Resources.Load(path) as AudioClip;
+        audioSource.Play(); 
     }
 }
