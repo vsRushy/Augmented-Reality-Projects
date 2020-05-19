@@ -21,6 +21,7 @@ public class Ball : MonoBehaviour
     Scrollbar power_bar;
     LauchPhase lauchPhase;
     bool first_arrow_cycle = true;
+    AudioSource audioSource; 
     [HideInInspector]
     public Rigidbody body;
 
@@ -42,6 +43,10 @@ public class Ball : MonoBehaviour
         arrow_transform = arrow.GetComponent<RectTransform>(); 
         start_Y_angle = arrow_transform.rotation.eulerAngles.y;
         current_arrow_rotation_speed = arrow_rotation_speed;
+
+        audioSource = GameObject.Find("SFX").GetComponent<AudioSource>();
+        audioSource.Stop();
+        audioSource.clip = Resources.Load("Sound/throw") as AudioClip;
 
         SetPowerColors(); 
         Debug.Log("Arrow starts with this Y angle:" + start_Y_angle); 
@@ -107,7 +112,10 @@ public class Ball : MonoBehaviour
         body.useGravity = true;
         Vector3 forceVector = new Vector3(result, side, side).normalized * forceStrength * power_bar.value; 
         body.AddForce(forceVector, ForceMode.Impulse);
-       
+
+        // Audio
+        audioSource.volume = power_bar.value; 
+        audioSource.Play(); 
     }
 
     void RotateArrow()
