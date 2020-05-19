@@ -22,7 +22,7 @@ public class Ball : MonoBehaviour
     float current_prevention_time = 0f; 
     Scrollbar power_bar;
     LauchPhase lauchPhase;
-    AudioSource audioSource; 
+    AudioSource audioSource;
     [HideInInspector]
     public Rigidbody body;
 
@@ -95,7 +95,8 @@ public class Ball : MonoBehaviour
              
         }
         else if(lauchPhase == LauchPhase.POWER) // fixed in horizontal axis
-            transform.position = camera.transform.position + camera.transform.forward * distance_to_ARCamera;
+            transform.position = camera.transform.position + camera.transform.right * current_displacement
+                 + camera.transform.forward * distance_to_ARCamera;
 
         // a bit downwards
         transform.position -= camera.transform.up * down_from_ARCamera; 
