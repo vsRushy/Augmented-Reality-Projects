@@ -24,6 +24,8 @@ public class Ball : MonoBehaviour
     LauchPhase lauchPhase;
     AudioSource audioSource;
 
+    public bool ten_points = false;
+
 
     public GameObject Nice_Shot;
     public GameObject Beast;
@@ -54,6 +56,8 @@ public class Ball : MonoBehaviour
 
         Nice_Shot = GameObject.Find("Nice_Shot");
         Beast = GameObject.Find("Nice_shot2");
+
+        ten_points = false;
 
     }
 
