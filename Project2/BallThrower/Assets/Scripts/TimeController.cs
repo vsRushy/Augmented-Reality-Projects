@@ -23,7 +23,7 @@ public class TimeController : MonoBehaviour
 
         if(time <= 0.0f)
         {
-            // Change scene
+
         }
     }
 }
