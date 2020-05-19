@@ -23,7 +23,7 @@ public class SuccessPoint : MonoBehaviour
         if (collision.collider.name == "Ball")
         {
             if (GameObject.Find("Ball").GetComponent<Ball>().ten_points == true)
-                ScoreManager.score += 10;
+                ScoreManager.score += 4;
             else
                 ++ScoreManager.score;
 
