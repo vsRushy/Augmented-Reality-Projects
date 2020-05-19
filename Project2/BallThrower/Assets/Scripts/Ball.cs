@@ -63,11 +63,27 @@ public class Ball : MonoBehaviour
         if (lauchPhase == LauchPhase.HORIZONTAL)
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
                 lauchPhase = LauchPhase.POWER;
+
+                if (Nice_Shot.active)
+                    Nice_Shot.SetActive(false);
+
+                if (Beast.active)
+                    Beast.SetActive(false);
+
+               
+
+            }
+                
          
         }
         else if (lauchPhase == LauchPhase.POWER)
+        {
+          
             LaunchBallLogic();
+        }
+           
 
         if(lauchPhase != LauchPhase.LAUNCHED)
             SetWithCamera(); 
@@ -146,6 +162,9 @@ public class Ball : MonoBehaviour
 
     public void LaunchBallLogic()
     {
+        
+
+
         current_prevention_time += Time.deltaTime; 
         Debug.Log("Prevention time is " + current_prevention_time);
 
@@ -179,8 +198,6 @@ public class Ball : MonoBehaviour
         lauchPhase = LauchPhase.LAUNCHED;
 
 
-        Nice_Shot.SetActive(false);
-        Beast.SetActive(false);
     }
 
 
