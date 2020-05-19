@@ -128,5 +128,5 @@ MonoBehaviour:
   down_from_ARCamera: 0.025
   total_displacement_X: 0.07
   horizontal_speed: 0.04
-  forceStrength: 3
+  forceStrength: 1.5
   body: {fileID: 0}

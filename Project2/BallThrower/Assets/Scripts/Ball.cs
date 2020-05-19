@@ -178,4 +178,12 @@ public class Ball : MonoBehaviour
     {
         GameObject.Find("BallManager").GetComponent<BallSpawner>().NewBall(false); 
     }
+
+    void OnCollisionEnter(Collision col)
+    {
+        if (lauchPhase != LauchPhase.LAUNCHED)
+            return; 
+
+
+    }
 }
