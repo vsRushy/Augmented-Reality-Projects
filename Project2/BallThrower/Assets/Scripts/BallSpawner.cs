@@ -16,11 +16,10 @@ public class BallSpawner : MonoBehaviour
 
     AudioSource audioSource;
 
-
-
-
     public float max_popUp_time = 3.0f;
     private float current_time = 0.0f;
+    bool count = false; 
+
     public 
     void Start()
     {
@@ -38,12 +37,22 @@ public class BallSpawner : MonoBehaviour
 
    void Update()
     {
-        current_time += Time.deltaTime;
-        if(current_time >= max_popUp_time)
+        if(count)
         {
-            SetPopUpsActive(false); 
-            current_time = 0.0f;
+            current_time += Time.deltaTime;
+            if (current_time >= max_popUp_time)
+            {
+                PopUpEnd(); 
+            }
         }
+
+    }
+
+    void PopUpEnd()
+    {
+        SetPopUpsActive(false);
+        current_time = 0.0f;
+        count = false;
     }
 
     public void NewBall(bool success)
@@ -77,6 +86,11 @@ public class BallSpawner : MonoBehaviour
                 Beast.SetActive(true);
             }
 
+            // clean (prevention)
+            PopUpEnd(); 
+
+            // start counting
+            count = true; 
 
             return; 
         }
