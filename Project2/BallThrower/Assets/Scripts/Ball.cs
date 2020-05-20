@@ -23,7 +23,6 @@ public class Ball : MonoBehaviour
     Scrollbar power_bar;
     LauchPhase lauchPhase;
     AudioSource audioSource;
-
     public bool ten_points = false;
 
     [HideInInspector]
@@ -59,7 +58,7 @@ public class Ball : MonoBehaviour
     {
         if (lauchPhase == LauchPhase.HORIZONTAL)
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+            if (GetMousePress())
                 lauchPhase = LauchPhase.POWER;
         }
         else if (lauchPhase == LauchPhase.POWER)
@@ -67,12 +66,21 @@ public class Ball : MonoBehaviour
           
             LaunchBallLogic();
         }
-           
 
-        if(lauchPhase != LauchPhase.LAUNCHED)
+        if (lauchPhase != LauchPhase.LAUNCHED)
             SetWithCamera(); 
     }
 
+    bool GetMousePress()
+    {
+#if UNITY_ANDROID
+        return (Input.GetTouch(0).phase == TouchPhase.Began);
+#elif UNITY_STANDALONE_WIN
+        return Input.GetKeyDown(KeyCode.Mouse0);
+#else
+        return false; 
+#endif
+    }
 
     void SetWithCamera()
     {
