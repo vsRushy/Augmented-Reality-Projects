@@ -1037,8 +1037,8 @@ MonoBehaviour:
   prefab: {fileID: 4430300377643913111, guid: 0d110a8a23d1d364eb5250b40402fbb0, type: 3}
   position: {fileID: 675434919}
   uiScore: {fileID: 2134583259}
-  Nice_Shot: {fileID: 0}
-  Beast: {fileID: 0}
+  Nice_Shot: {fileID: 1848264331}
+  Beast: {fileID: 917203943}
   max_popUp_time: 3
 --- !u!4 &467579693
 Transform:

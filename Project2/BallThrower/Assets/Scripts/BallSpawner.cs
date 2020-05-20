@@ -26,8 +26,8 @@ public class BallSpawner : MonoBehaviour
         NewBall(false);
         power_bar = GameObject.Find("Power").GetComponent<Scrollbar>();
 
-        Nice_Shot = GameObject.Find("Nice_Shot");
-        Beast = GameObject.Find("Nice_shot2");
+     /*   Nice_Shot = GameObject.Find("Nice_Shot");
+        Beast = GameObject.Find("Nice_shot2");*/
 
         Nice_Shot.SetActive(false);
         Beast.SetActive(false);
@@ -80,14 +80,14 @@ public class BallSpawner : MonoBehaviour
             if (h == 0)
             {
                 Nice_Shot.SetActive(true);
+                Debug.Log("NICE SHOT POP-UP"); 
             }
             else
             {
                 Beast.SetActive(true);
+                Debug.Log("BEAST POP-UP");
             }
-
-            // clean (prevention)
-            PopUpEnd(); 
+            
 
             // start counting
             count = true; 
