@@ -19,9 +19,9 @@ public class BallSpawner : MonoBehaviour
 
 
 
-    public float max_time = 7.0f;
+    public float max_popUp_time = 3.0f;
     private float current_time = 0.0f;
-
+    public 
     void Start()
     {
         NewBall(false);
@@ -36,15 +36,15 @@ public class BallSpawner : MonoBehaviour
         audioSource = GameObject.Find("SFX").GetComponent<AudioSource>();
     }
 
-   /*void Update()
+   void Update()
     {
         current_time += Time.deltaTime;
-        if(current_time >= max_time)
+        if(current_time >= max_popUp_time)
         {
-            Instantiate(prefab);
+            SetPopUpsActive(false); 
             current_time = 0.0f;
         }
-    }*/
+    }
 
     public void NewBall(bool success)
     {
@@ -87,6 +87,11 @@ public class BallSpawner : MonoBehaviour
         ball.GetComponent<Ball>().enabled = true; // ... Unity is utter rubish and spawns with the script disable
     }
 
+    public void SetPopUpsActive (bool active)
+    {
+        Nice_Shot.SetActive(active);
+        Beast.SetActive(active); 
+    }
 
 
    

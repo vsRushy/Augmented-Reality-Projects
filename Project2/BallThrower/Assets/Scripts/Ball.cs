@@ -26,10 +26,6 @@ public class Ball : MonoBehaviour
 
     public bool ten_points = false;
 
-
-    public GameObject Nice_Shot;
-    public GameObject Beast;
-
     [HideInInspector]
     public Rigidbody body;
 
@@ -54,9 +50,6 @@ public class Ball : MonoBehaviour
         SetPowerColors(); 
         Debug.Log("Arrow starts with this Y angle:" + start_Y_angle);
 
-        Nice_Shot = GameObject.Find("Nice_Shot");
-        Beast = GameObject.Find("Nice_shot2");
-
         ten_points = false;
 
     }
@@ -67,20 +60,7 @@ public class Ball : MonoBehaviour
         if (lauchPhase == LauchPhase.HORIZONTAL)
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
                 lauchPhase = LauchPhase.POWER;
-
-                if (Nice_Shot.active)
-                    Nice_Shot.SetActive(false);
-
-                if (Beast.active)
-                    Beast.SetActive(false);
-
-               
-
-            }
-                
-         
         }
         else if (lauchPhase == LauchPhase.POWER)
         {
