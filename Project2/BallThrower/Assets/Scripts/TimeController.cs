@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class TimeController : MonoBehaviour
 {
     Text text;
-    float time = 60.0f;
+    float time = 120.0f;
     GameObject finale;
   
 
