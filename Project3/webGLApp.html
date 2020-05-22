@@ -41,6 +41,9 @@
             var gl;
             var shaderProgram;
 
+            var pMatrix = mat4.create();
+            var mvMatrix = mat4.create();
+
             var fov = 90;
             var zNear = 0.1;
             var zFar = 100.0;
@@ -79,7 +82,20 @@
             {
                 mouseDown = true;
 
+                // Left button
                 if(event.button == 0)
+                {
+                    
+                }
+
+                // Mid button
+                if(event.button == 1)
+                {
+
+                }
+
+                // Right button
+                if(event.button == 2)
                 {
 
                 }
@@ -89,7 +105,20 @@
             {
                 mouseDown = false;
 
+                // Left button
                 if(event.button == 0)
+                {
+
+                }
+
+                // Mid button
+                if(event.button == 1)
+                {
+
+                }
+
+                // Right button
+                if(event.button == 2)
                 {
 
                 }
@@ -328,6 +357,24 @@
                 {
                     
                 }
+
+                // Left
+                if(currentlyPressedKeys[37])
+                {
+                    
+                }
+
+                // Right
+                if(currentlyPressedKeys[39])
+                {
+                    
+                }
+
+                // Reset (key 'R')
+                if(currentlyPressedKeys[82])
+                {
+                    
+                }
             }
 
 
@@ -350,10 +397,8 @@
                 gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexTexCoordsBuffer);
                 gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, triangleVertexTexCoordsBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-                var pMatrix = mat4.create();
                 mat4.perspective(fov, gl.viewportWidth / gl.viewportHeight, zNear, zFar, pMatrix);
 
-                var mvMatrix = mat4.create();
                 mat4.identity(mvMatrix);
                 mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
                 mat4.multiply(mvMatrix, mouseRotationMatrix);
@@ -373,18 +418,14 @@
                 gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexTexCoordsBuffer2);
                 gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, triangleVertexTexCoordsBuffer2.itemSize, gl.FLOAT, false, 0, 0);
 
-                var pMatrix2 = mat4.create();
-                mat4.perspective(fov, gl.viewportWidth / gl.viewportHeight, zNear, zFar, pMatrix2);
+                mat4.identity(mvMatrix);
+                mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
+                mat4.multiply(mvMatrix, mouseRotationMatrix);
+                mat4.translate(mvMatrix, [-2.0, 0.0, 0.0]);
+                mat4.scale(mvMatrix, [2.0, 2.0, 1.0]);
 
-                var mvMatrix2 = mat4.create();
-                mat4.identity(mvMatrix2);
-                mat4.translate(mvMatrix2, [0.0, 0.0, -10.0]);
-                mat4.multiply(mvMatrix2, mouseRotationMatrix);
-                mat4.translate(mvMatrix2, [-2.0, 0.0, 0.0]);
-                mat4.scale(mvMatrix2, [2.0, 2.0, 1.0]);
-
-                gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix2);
-                gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix2);
+                gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+                gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
                 gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer2.numItems);
 
