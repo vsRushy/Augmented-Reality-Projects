@@ -329,6 +329,7 @@
                 myTexture.image.onload = function () {
                     setTextureParameters(myTexture);
                 }
+                myTexture.image.onload();
                 myTexture.image.src = "textures/marvel.png";
             }
 
@@ -377,7 +378,62 @@
                 }
             }
 
+            
+            // ----------------------------------------------------------------- Laptop & Teapot :)
+            function LoadModel(path)
+            {
+                var request = new XMLHttpRequest();
+                request.open("GET", path);
+                request.onreadystatechange = function () {
+                    if(request.readyState == 4)
+                    {
+                        handleLoadedModel(JSON.parse(request.responseText));
+                    }
+                }
+                request.send();
+            }
+            
+            // Laptop
+            var modelVertexPositionBuffer;
+            var modelVertexNormalBuffer;
+            var modelVertexTextureCoordBuffer;
+            var modelVertexIndexBuffer;
 
+            // Teapot
+
+            function HandleLoadedModel(parsedModel)
+            {
+                // vertex normals 
+                modelVertexNormalBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexNormalBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(parsedModel.vertexNormals), gl.STATIC_DRAW);
+                modelVertexNormalBuffer.itemSize = 3;
+                modelVertexNormalBuffer.numItems = parsedModel.vertexNormals.length / 3;
+                
+                // texture coords
+                modelVertexTextureCoordBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexTextureCoordBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(parsedModel.vertexTextureCoords), gl.STATIC_DRAW);
+                modelVertexTextureCoordBuffer.itemSize = 2;
+                modelVertexTextureCoordBuffer.numItems = parsedModel.vertexTextureCoords.length / 2;
+                
+                // position
+                modelVertexPositionBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(parsedModel.vertexPositions), gl.STATIC_DRAW);
+                modelVertexPositionBuffer.itemSize = 3;
+                modelVertexPositionBuffer.numItems = parsedModel.vertexPositions.length / 3;
+                
+                // index
+                modelVertexIndexBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexIndexBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(parsedModel.indices), gl.STATIC_DRAW);
+                modelVertexIndexBuffer.itemSize = 1;
+                modelVertexIndexBuffer.numItems = parsedModel.indices.length;
+
+            }
+
+            // ----------------------------------------------------------------- DRAWING
             function drawScene()
             {
                 gl.enable(gl.DEPTH_TEST);
@@ -404,6 +460,20 @@
                 mat4.multiply(mvMatrix, mouseRotationMatrix);
                 mat4.translate(mvMatrix, [2.0, 0.0, 0.0]);
                 mat4.scale(mvMatrix, [2.0, 2.0, 1.0]);
+
+                
+                // Draw models (before matrix-shader "connection" XD)
+                if(modelVertexPositionBuffer)
+                {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer);
+                    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,
+                    modelVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelVertexIndexBuffer);
+                    
+                    // TODO: send matrices to shader
+                    
+                    gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+                }
 
                 gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
                 gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
@@ -432,22 +502,28 @@
                 gl.disable(gl.DEPTH_TEST);
             }
             
+            // ----------------------------------------------------------------- CORE LOOP
             function renderingLoop()
             {
                 requestAnimationFrame(renderingLoop);
                 handleKeys();
                 drawScene();
             }
-
+            
+            // ----------------------------------------------------------------- START
             function webGLStart()
             {
                 initGL();
                 initShaders();
-                loadSceneOnGPU();
-                loadTextureOnGPU();
+                
+                /*loadSceneOnGPU();
+                loadTextureOnGPU();*/
+                LoadModel("models/Laptop.json");
+                LoadModel("models/Teapot.json");
                 
                 renderingLoop();
             }
+
 
         </script>
 
