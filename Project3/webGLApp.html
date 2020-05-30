@@ -320,9 +320,9 @@
             }
             
             
-            var myTexture;
+          /*  var myTexture;
 
-            function loadTextureOnGPU()
+             function loadTextureOnGPU()
             {
                 myTexture = gl.createTexture();
                 myTexture.image = new Image();
@@ -342,7 +342,7 @@
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                 gl.bindTexture(gl.TEXTURE_2D, null);
-            }
+            }*/
 
 
             function handleKeys()
@@ -387,7 +387,7 @@
                 request.onreadystatechange = function () {
                     if(request.readyState == 4)
                     {
-                        handleLoadedModel(JSON.parse(request.responseText));
+                        HandleLoadedModel(JSON.parse(request.responseText));
                     }
                 }
                 request.send();
@@ -443,15 +443,15 @@
                 gl.clearColor(0.0, 0.0, 0.0, 1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-                gl.activeTexture(gl.TEXTURE0);
+                /*gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, myTexture);
-                gl.uniform1i(shaderProgram.texture, 0);
+                gl.uniform1i(shaderProgram.texture, 0);*/
                 
-                gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
+                /*gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
                 gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
                 
                 gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexTexCoordsBuffer);
-                gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, triangleVertexTexCoordsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, triangleVertexTexCoordsBuffer.itemSize, gl.FLOAT, false, 0, 0);*/
 
                 mat4.perspective(fov, gl.viewportWidth / gl.viewportHeight, zNear, zFar, pMatrix);
 
@@ -463,7 +463,7 @@
 
                 
                 // Draw models (before matrix-shader "connection" XD)
-                if(modelVertexPositionBuffer)
+               /* if(modelVertexPositionBuffer)
                 {
                     gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer);
                     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,
@@ -474,19 +474,19 @@
                     
                     gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
                 }
-
+*/
                 gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
                 gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
-                gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
+                //gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
             
                 // ------------------------
 
-                gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer2);
+               /* gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer2);
                 gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer2.itemSize, gl.FLOAT, false, 0, 0);
                 
                 gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexTexCoordsBuffer2);
-                gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, triangleVertexTexCoordsBuffer2.itemSize, gl.FLOAT, false, 0, 0);
+                gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, triangleVertexTexCoordsBuffer2.itemSize, gl.FLOAT, false, 0, 0);*/
 
                 mat4.identity(mvMatrix);
                 mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
@@ -497,7 +497,7 @@
                 gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
                 gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
-                gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer2.numItems);
+           //     gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer2.numItems);
 
                 gl.disable(gl.DEPTH_TEST);
             }
