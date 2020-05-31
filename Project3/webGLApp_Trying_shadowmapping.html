@@ -200,24 +200,6 @@
                 gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             }
 
-            function drawSceneFromLight()
-            {
-                gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
-                gl.viewport(0,0, rttFramebuffer.width, rttFramebuffer.height);
-                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-                gl.useProgram(lightShaderProgram);
-
-                gl.enableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
-
-                // Aqui va todo el code de la escena.
-
-
-
-                gl.disableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
-                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-            }
 
             var shaderProgram;
 
@@ -308,7 +290,7 @@
             }
 
             function loadModelOnGPU() {
-                var index = ["Teapot", "Laptop"];
+                var index = ["Teapot", "Laptop", "Floor"];
 
                 for (var i = 0; i < index.length; ++i) {
 
@@ -436,13 +418,14 @@
                     gl.uniform3f(shaderProgram.MKs_Uniform, 0.5, 0.5, 0.5);
                     gl.uniform1f(shaderProgram.Mshininess_Uniform, 32.0);
 
-                    // Draw
                     mvPushMatrix();
-                    mat4.translate(mvMatrix, [1.3, -0.3, 0.0]);
-                    mat4.rotate(mvMatrix, deg2Rad(-90),[1, 0, 0]);
-                    mat4.scale(mvMatrix, [0.8, 0.8, 0.8]);
+                    mat4.translate(mvMatrix, [0, -0.5, 0.0]);
+                    mat4.rotate(mvMatrix, deg2Rad(-180),[1, 0, 0]);
+                    mat4.scale(mvMatrix, [6, 6, 6]);
                     sendMatricesToShader();
                     mvPopMatrix();
+                    // Draw
+                    
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer[1]);
                     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, modelVertexPositionBuffer[1].itemSize, gl.FLOAT, false, 0, 0);
@@ -453,6 +436,50 @@
                     //gl.uniform4fv(shaderProgram.colorUniform, colors[1]);
                     gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer[1].numItems, gl.UNSIGNED_SHORT, 0);
                 }
+
+                if (modelVertexPositionBuffer[2])
+                {
+                    // Surface properties
+                    gl.uniform3f(shaderProgram.MKa_Uniform, 1.0, 0.5, 1.0);
+                    gl.uniform3f(shaderProgram.MKd_Uniform, 1.0, 0.5, 1.0);
+                    gl.uniform3f(shaderProgram.MKs_Uniform, 0.5, 0.5, 0.5);
+                    gl.uniform1f(shaderProgram.Mshininess_Uniform, 32.0);
+
+                    // Draw
+                    mvPushMatrix();
+                    mat4.translate(mvMatrix, [1.3, -0.3, 0.0]);
+                    mat4.rotate(mvMatrix, deg2Rad(-90),[1, 0, 0]);
+                    mat4.scale(mvMatrix, [0.8, 0.8, 0.8]);
+                    sendMatricesToShader();
+                    mvPopMatrix();
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer[2]);
+                    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, modelVertexPositionBuffer[2].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexNormalBuffer[2]);
+                    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, modelVertexNormalBuffer[2].itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelVertexIndexBuffer[2]);
+                    //gl.uniform4fv(shaderProgram.colorUniform, colors[1]);
+                    gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer[2].numItems, gl.UNSIGNED_SHORT, 0);
+                }
+
+            }
+
+            
+            function drawSceneFromLight()
+            {
+                gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+                gl.viewport(0,0, rttFramebuffer.width, rttFramebuffer.height);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+                gl.useProgram(lightShaderProgram);
+
+                gl.enableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
+
+                // Aqui va todo el code de la escena.
+
+                gl.disableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
             }
 
