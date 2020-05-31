@@ -206,15 +206,15 @@
                 gl.viewport(0,0, rttFramebuffer.width, rttFramebuffer.height);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-                gl.useProgram(programLight);
+                gl.useProgram(lightShaderProgram);
 
-                gl.enableVertexAttribArray(programLight.vertexPositionAttribute);
+                gl.enableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
 
                 // Aqui va todo el code de la escena.
 
 
 
-                gl.disableVertexAttribArray(programLight.vertexPositionAttribute);
+                gl.disableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
                 gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
             }
@@ -282,7 +282,7 @@
                 lightShaderProgram.modelMatLight = gl.getUniformLocation(lightShaderProgram, "modelViewMatrixLight");
                 
                 
-                gl.useProgram(shaderProgram);
+                //gl.useProgram(shaderProgram);
 
 
             }
@@ -386,6 +386,9 @@
             function drawScene() {
                 gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+
+                gl.useProgram(shaderProgram);
   
                 mat4.perspective(fov, gl.viewportWidth / gl.viewportHeight, zNear, zFar, pMatrix);
 
@@ -481,6 +484,7 @@
 
                 initGL(canvas);
                 initShaders();
+                initTextureFramebuffer();
  
                 loadModelOnGPU();
                 loadTextureOnGPU();
