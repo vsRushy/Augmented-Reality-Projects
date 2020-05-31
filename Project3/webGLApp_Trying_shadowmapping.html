@@ -17,14 +17,23 @@
 
             varying vec3 normalEye;
             varying vec4 positionEye;
+            
+            // pls this should work
 
+            uniform mat4 modelViewMatrixLight;
+            uniform mat4 projectionMatrixLight;
+
+
+            varying vec4 positionProjectedLightspace;
           
 
             void main(void) {
                 normalEye = normalize(uNormalMatrix * aVertexNormal);
                 positionEye = uMVMatrix * vec4(aVertexPosition, 1.0);
 
-                gl_Position = uPMatrix * positionEye;                
+                gl_Position = uPMatrix * positionEye;  
+                
+                positionProjectedLightspace = projectionMatrixLight * modelViewMatrixLight * vec4(aVertexPosition, 1.0);
             }
         </script>
         
@@ -55,6 +64,21 @@
             varying vec4 positionEye;
             
             const vec3 lightPositionEye = vec3(-1.0, 3.0, 0.0);
+
+            uniform sampler2D lightDepth;
+
+            varying vec4 positionProjectedLightspace;
+
+            float decodeFloat(vec4 color)
+            {
+                const vec4 bitShift = vec4(
+                    1.0 / (256.0 * 256.0 * 256.0),
+                    1.0 / (256.0 * 256.0),
+                    1.0 / 256.0,
+                    1
+                );
+                return dot(color, bitShift);
+            }
 
 
             void main(void) {
@@ -110,10 +134,9 @@
 
             void main(void)
             {
-                gl_FragColor = encodeFloat(gl_FragColor.z);
+                gl_FragColor = encodeFloat(gl_FragCoord.z);
+                
             }
-
-
 
         </script>
 
@@ -221,10 +244,10 @@
                 gl.useProgram(shaderProgram);
 
                 shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-                gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+               // gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
                 shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
-                gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+               // gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
 
                 shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
                 shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
@@ -257,7 +280,7 @@
                 gl.useProgram(lightShaderProgram);
 
                 lightShaderProgram.vertexPositionAttribute = gl.getAttribLocation(lightShaderProgram, "aVertexPosition");
-                gl.enableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
+                //gl.enableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
                 // Matrix to flames
 
                 lightShaderProgram.projMatLight = gl.getUniformLocation(lightShaderProgram, "projectionMatrixLight");
@@ -265,7 +288,7 @@
                 
                 
                 //gl.useProgram(shaderProgram);
-
+                
 
             }
 
@@ -307,7 +330,7 @@
                     request.send();
                 }    
             }
-
+            // handling matrix -----------------------------------------------------------------------------------------------------
             var mvMatrix = mat4.create();
             var pMatrix = mat4.create();
 
@@ -320,6 +343,53 @@
                 mat3.transpose(normalMatrix);
                 gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
             }
+
+            var mvMatrixStack = [];
+
+            function mvPushMatrix(){
+                var copy = mat4.create();
+                mat4.set(mvMatrix, copy);
+                mvMatrixStack.push(copy);
+            }
+
+            function mvPopMatrix(){
+                if (mvMatrixStack.length == 0){
+                    throw "Invalid popMatrix!";
+                }
+                mvMatrix = mvMatrixStack.pop();
+            }
+
+
+            // Light Matrix ------------------
+
+            var mvLightMatrix = mat4.create();
+            var pLightMatrix = mat4.create();
+
+            var mvLightMatStack = [];
+
+            function mvPushLightMatrix(){
+                var copy = mat4.create();
+                mat4.set(mvLightMatrix, copy);
+                mvLightMatStack.push(copy);
+            }
+
+            function mvPopLightMatrix(){
+                if (mvLightMatStack.length == 0){
+                    throw "you dumb fuck!";
+                }
+                mvLightMatrix = mvLightMatStack.pop();
+            }
+
+
+            function sendMatricesToLightShader(){
+                gl.uniformMatrix4fv(lightShaderProgram.projMatLight, false, pLightMatrix);
+                gl.uniformMatrix4fv(lightShaderProgram.modelMatLight, false, mvLightMatrix);
+            }
+
+
+            // Light Matrix ------------------
+
+            // handling matrix ------------------------------------------------------------------------------------------------------
 
             var modelVertexPositionBuffer = [];
             var modelVertexNormalBuffer = [];
@@ -368,7 +438,7 @@
             function drawScene() {
                 gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+                gl.enable(gl.DEPTH_TEST);
 
                 gl.useProgram(shaderProgram);
   
@@ -462,46 +532,117 @@
                     //gl.uniform4fv(shaderProgram.colorUniform, colors[1]);
                     gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer[2].numItems, gl.UNSIGNED_SHORT, 0);
                 }
-
+                // activa y desactiva lo de los vertex normals
             }
 
-            
+            var point_light = mat4.create();
+            var light_pos = [10.0, 10.0, -10.0];
+
             function drawSceneFromLight()
             {
-                gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
-                gl.viewport(0,0, rttFramebuffer.width, rttFramebuffer.height);
+                //gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+                //gl.viewport(0,0, rttFramebuffer.width, rttFramebuffer.height);
+                gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+                gl.enable(gl.DEPTH_TEST);
                 gl.useProgram(lightShaderProgram);
 
                 gl.enableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
 
-                // Aqui va todo el code de la escena.
+                
+                mat4.ortho(-5.0, 5.0, -5.0, 5.0, 0.0 ,30.0, pLightMatrix);
+                mat4.identity(mvLightMatrix);
+
+                mat4.lookAt(light_pos, [0.0, 0.0, 0.0], [0.0, 1.0, 0.0], mvLightMatrix);
+
+              
+                //Rendering Scene
+                if (modelVertexPositionBuffer[0])
+                {
+                    // Draw
+                    mvPushLightMatrix();
+
+                    mat4.translate(mvLightMatrix, [-1.3, 0.0, 0.0]);
+                    mat4.scale(mvLightMatrix, [0.05, 0.05, 0.05]);
+                    sendMatricesToLightShader();
+                    
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer[0]);
+                    gl.vertexAttribPointer(lightShaderProgram.vertexPositionAttribute, modelVertexPositionBuffer[0].itemSize, gl.FLOAT, false, 0, 0);
+                   // gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexNormalBuffer[0]);
+                   // gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, modelVertexNormalBuffer[0].itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelVertexIndexBuffer[0]);
+                   // gl.uniform4fv(shaderProgram.colorUniform, colors[0]);
+                    gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer[0].numItems, gl.UNSIGNED_SHORT, 0);
+                    mvPopLightMatrix();
+                  
+                }
+
+                if (modelVertexPositionBuffer[1])
+                {
+                    mvPushLightMatrix();
+
+                    mat4.translate(mvLightMatrix, [0, -0.5, 0.0]);
+                    mat4.rotate(mvLightMatrix, deg2Rad(-180),[1, 0, 0]);
+                    mat4.scale(mvLightMatrix, [6, 6, 6]);
+                    sendMatricesToLightShader();
+
+                    // Draw
+                    
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer[1]);
+                    gl.vertexAttribPointer(lightShaderProgram.vertexPositionAttribute, modelVertexPositionBuffer[1].itemSize, gl.FLOAT, false, 0, 0);
+                   // gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexNormalBuffer[1]);
+                   // gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, modelVertexNormalBuffer[1].itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelVertexIndexBuffer[1]);
+                    //gl.uniform4fv(shaderProgram.colorUniform, colors[1]);
+                    gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer[1].numItems, gl.UNSIGNED_SHORT, 0);
+                    mvPopLightMatrix();
+
+              
+                }
+
+                if (modelVertexPositionBuffer[2])
+                {
+                    // Draw
+                    mvPushLightMatrix();
+
+                    mat4.translate(mvLightMatrix, [1.3, -0.3, 0.0]);
+                    mat4.rotate(mvLightMatrix, deg2Rad(-90),[1, 0, 0]);
+                    mat4.scale(mvLightMatrix, [0.8, 0.8, 0.8]);
+                    sendMatricesToLightShader();
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexPositionBuffer[2]);
+                    gl.vertexAttribPointer(lightShaderProgram.vertexPositionAttribute, modelVertexPositionBuffer[2].itemSize, gl.FLOAT, false, 0, 0);
+                   // gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexNormalBuffer[2]);
+                   // gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, modelVertexNormalBuffer[2].itemSize, gl.FLOAT, false, 0, 0);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelVertexIndexBuffer[2]);
+                    //gl.uniform4fv(shaderProgram.colorUniform, colors[1]);
+                    gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer[2].numItems, gl.UNSIGNED_SHORT, 0);
+                    mvPopLightMatrix();
+
+              
+                }
+
+                //Rendering Scene
+               
+                
 
                 gl.disableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
                 gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
             }
 
-            var mvMatrixStack = [];
-
-            function mvPushMatrix(){
-                var copy = mat4.create();
-                mat4.set(mvMatrix, copy);
-                mvMatrixStack.push(copy);
-            }
-
-            function mvPopMatrix(){
-                if (mvMatrixStack.length == 0){
-                    throw "Invalid popMatrix!";
-                }
-                mvMatrix = mvMatrixStack.pop();
-            }
+            
 
             function renderingLoop() {
                 requestAnimFrame(renderingLoop);
                 handleKeys();
-                drawScene();
+                drawSceneFromLight();
+                //drawScene();
             }
 
             function webGLStart() {
@@ -516,7 +657,7 @@
                 loadModelOnGPU();
                 loadTextureOnGPU();
 
-                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                //gl.clearColor(0.0, 0.0, 0.0, 1.0);
                 gl.enable(gl.DEPTH_TEST);
                 gl.enable(gl.CULL_FACE);
                 gl.cullFace(gl.BACK);
