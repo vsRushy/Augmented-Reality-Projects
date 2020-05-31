@@ -91,9 +91,20 @@
                 vec3 R = reflect(-L, N);
                 float RdotV = pow(max(dot(R, V), 0.0), material.shininess);
 
-                vec3 shadedColor = material.Ka * light.Ia + material.Kd * light.Id * NdotL + material.Ks * light.Is * RdotV;
+                vec3 positionTextureLightspace= 0.5*positionProjectedLightspace.xyz / positionProjectedLightspace.w + vec3(0.5);
+                float depthFromLightTexture = decodeFloat(texture2D(lightDepth,positionTextureLightspace.xy));
+
+                float lightFactor = 0.0;
+
+                if (depthFromLightTexture + 0.001 > positionTextureLightspace.z) {
+                    lightFactor = 1.0;
+                }
+
+                vec3 shadedColor = material.Ka * light.Ia + (material.Kd * light.Id * NdotL + material.Ks * light.Is * RdotV) * lightFactor;
 
                 gl_FragColor = vec4(shadedColor, 1.0);
+
+
             }
         </script>
         
@@ -439,6 +450,8 @@
                 gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
                 gl.enable(gl.DEPTH_TEST);
+                gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+                gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
 
                 gl.useProgram(shaderProgram);
   
@@ -532,6 +545,10 @@
                     //gl.uniform4fv(shaderProgram.colorUniform, colors[1]);
                     gl.drawElements(gl.TRIANGLES, modelVertexIndexBuffer[2].numItems, gl.UNSIGNED_SHORT, 0);
                 }
+
+                gl.disableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+            
+                gl.disableVertexAttribArray(shaderProgram.vertexPositionAttribute);
                 // activa y desactiva lo de los vertex normals
             }
 
@@ -540,9 +557,9 @@
 
             function drawSceneFromLight()
             {
-                //gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
-                //gl.viewport(0,0, rttFramebuffer.width, rttFramebuffer.height);
-                gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+                gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+                gl.viewport(0,0, rttFramebuffer.width, rttFramebuffer.height);
+                //gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
                 gl.enable(gl.DEPTH_TEST);
                 gl.useProgram(lightShaderProgram);
@@ -561,7 +578,6 @@
                 {
                     // Draw
                     mvPushLightMatrix();
-
                     mat4.translate(mvLightMatrix, [-1.3, 0.0, 0.0]);
                     mat4.scale(mvLightMatrix, [0.05, 0.05, 0.05]);
                     sendMatricesToLightShader();
@@ -641,8 +657,9 @@
             function renderingLoop() {
                 requestAnimFrame(renderingLoop);
                 handleKeys();
+                drawScene();
                 drawSceneFromLight();
-                //drawScene();
+                
             }
 
             function webGLStart() {
