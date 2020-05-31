@@ -72,6 +72,51 @@
                 gl_FragColor = vec4(shadedColor, 1.0);
             }
         </script>
+        
+        <script id="light-vs" type="x-shader/x-vertex">
+           attribute vec3 aVertexPosition;
+
+           uniform mat4 modelViewMatrixLight;
+           uniform mat4 projectionMatrixLight;
+
+
+           void main(void)
+           {
+               gl_Position = projectionMatrixLight * modelViewMatrixLight * vec4(aVertexPosition, 1.0);
+           }
+        </script>
+
+        <script id="light-fs" type="x-shader/x-fragment">
+            precision mediump float;
+
+            vec4 encodeFloat (float depth)
+            {
+                const vec4 bitShift = vec4(
+                    256*256*256,
+                    256*256,
+                    256,
+                    1.0
+                );
+                const vec4 bitMask = vec4(
+                    0,
+                    1.0/256.0,
+                    1.0/256.0,
+                    1.0/256.0
+                );
+                vec4 comp = fract(depth * bitShift);
+                comp -= comp.xxyz * bitMask;
+                return comp;
+            }
+
+            void main(void)
+            {
+                gl_FragColor = encodeFloat(gl_FragColor.z);
+            }
+
+
+
+        </script>
+
         <script type="text/javascript">
 
             var gl;
@@ -83,7 +128,7 @@
                 } catch (e) {
                 }
                 if (!gl) {
-                    alert("Could not initialise WebGL, sorry :-(");
+                    alert("Could not initialise WebGL, sad");
                 }
             }
 
@@ -176,6 +221,8 @@
 
             var shaderProgram;
 
+            var lightShaderProgram;
+
             function initShaders() {
                 var fragmentShader = getShader("shader-fs");
                 var vertexShader = getShader("shader-vs");
@@ -208,7 +255,36 @@
                 shaderProgram.MKa_Uniform = gl.getUniformLocation(shaderProgram, "material.Ka");
                 shaderProgram.MKd_Uniform = gl.getUniformLocation(shaderProgram, "material.Kd");
                 shaderProgram.MKs_Uniform = gl.getUniformLocation(shaderProgram, "material.Ks");
-                shaderProgram.Mshininess_Uniform = gl.getUniformLocation(shaderProgram, "material.shininess");              
+                shaderProgram.Mshininess_Uniform = gl.getUniformLocation(shaderProgram, "material.shininess");  
+
+                
+                var fragmentShader_1 = getShader("light-fs");
+                var vertexShader_1 = getShader("light-vs");
+
+                lightShaderProgram = gl.createProgram();
+                gl.attachShader(lightShaderProgram, vertexShader_1);
+                gl.attachShader(lightShaderProgram, fragmentShader_1);
+                gl.linkProgram(lightShaderProgram);
+
+                if(!gl.getProgramParameter(lightShaderProgram, gl.LINK_STATUS)){
+                    alert("Could not initialise light shaders");
+                }
+
+
+                
+                gl.useProgram(lightShaderProgram);
+
+                lightShaderProgram.vertexPositionAttribute = gl.getAttribLocation(lightShaderProgram, "aVertexPosition");
+                gl.enableVertexAttribArray(lightShaderProgram.vertexPositionAttribute);
+                // Matrix to flames
+
+                lightShaderProgram.projMatLight = gl.getUniformLocation(lightShaderProgram, "projectionMatrixLight");
+                lightShaderProgram.modelMatLight = gl.getUniformLocation(lightShaderProgram, "modelViewMatrixLight");
+                
+                
+                gl.useProgram(shaderProgram);
+
+
             }
 
             var myTexture;
@@ -425,6 +501,8 @@
                 renderingLoop();
             }
 
+
+            // Mouse imputs and other imputs handling ------------------------------------------------------------------------
             // Dictionary to manage key events
             var currentlyPressedKeys = {};
 
@@ -540,7 +618,7 @@
             function handleMouseWheel(event){
                 dist += event.deltaY * fixedDt;
             }
-
+            // Mouse imputs and other imputs handling ------------------------------------------------------------------------
         </script>
 
     </head>
